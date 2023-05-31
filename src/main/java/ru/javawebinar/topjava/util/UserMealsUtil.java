@@ -50,18 +50,16 @@ public class UserMealsUtil {
                 .collect(Collectors.groupingBy(userMeal -> userMeal.getDateTime().toLocalDate()))
                 .values()
                 .stream()
-                .map(x -> {
-                    Integer sum = x.stream().map(UserMeal::getCalories).reduce(0, Integer::sum);
-                    return x.stream()
+                .flatMap(userMeals -> {
+                    int sum = userMeals.stream().mapToInt(UserMeal::getCalories).sum();
+                    return userMeals.stream()
+                            .filter(userMeal -> TimeUtil.isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(), startTime, endTime))
                             .map(userMeal -> new UserMealWithExcess(
                                     userMeal.getDateTime(),
                                     userMeal.getDescription(),
                                     userMeal.getCalories(),
-                                    sum > caloriesPerDay))
-                            .collect(Collectors.toList());
+                                    sum > caloriesPerDay));
                 })
-                .flatMap(Collection::stream)
-                .filter(userMeal -> TimeUtil.isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(), startTime, endTime))
                 .collect(Collectors.toList());
     }
 }
