@@ -18,6 +18,6 @@ public class UserServlet extends HttpServlet {
         log.debug("redirect to users");
 
 //        request.getRequestDispatcher("/users.jsp").forward(request, response);
-        response.sendRedirect("users.jsp");
+        response.sendRedirect("/users.jsp");
     }
 }
