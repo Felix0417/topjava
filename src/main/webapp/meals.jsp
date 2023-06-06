@@ -24,8 +24,8 @@
             <td>${mealTo.description}</td>
             <td> ${mealTo.calories}</td>
 
-            <td><a href="meals?action=edit&mealId=<c:out value="${mealTo.id}"/>">Update</a></td>
-            <td><a href="meals?action=delete&mealId=<c:out value="${mealTo.id}"/>">Delete</a></td>
+            <td><a href="meals?action=edit&mealId=${mealTo.id}">Update</a></td>
+            <td><a href="meals?action=delete&&mealId=${mealTo.id}">Delete</a></td>
         </tr>
     </c:forEach>
 </table>

@@ -27,10 +27,10 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>mealServlet</servlet-name>
-        <url-pattern>/meals/edit</url-pattern>
+        <url-pattern>/edit</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>mealServlet</servlet-name>
-        <url-pattern>/meals/create</url-pattern>
+        <url-pattern>/create</url-pattern>
     </servlet-mapping>
 </web-app>
