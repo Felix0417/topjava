@@ -34,11 +34,9 @@ public class SaveInMemoryMealsRepository implements MealsRepository {
     public Meal save(Meal meal) {
         if (meal.getId() == null) {
             meal.setId(id.getAndIncrement());
-        } else if (!mealMap.containsKey(meal.getId())) {
-            return null;
+            return mealMap.computeIfAbsent(meal.getId(), newMeal -> meal);
         }
-        mealMap.putIfAbsent(meal.getId(), meal);
-        return mealMap.get(meal.getId());
+        return mealMap.computeIfPresent(meal.getId(), (k, v) -> meal);
     }
 
     @Override
