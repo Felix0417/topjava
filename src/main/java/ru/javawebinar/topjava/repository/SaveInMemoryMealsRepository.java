@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MealsRepositorySave implements MealsRepository {
+public class SaveInMemoryMealsRepository implements MealsRepository {
     private final AtomicInteger id = new AtomicInteger(0);
     private final Map<Integer, Meal> mealMap = new ConcurrentHashMap<>();
 
-    public MealsRepositorySave() {
+    public SaveInMemoryMealsRepository() {
         List<Meal> meals = Arrays.asList(
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
@@ -37,7 +37,8 @@ public class MealsRepositorySave implements MealsRepository {
         } else if (!mealMap.containsKey(meal.getId())) {
             return null;
         }
-        return mealMap.put(meal.getId(), meal);
+        mealMap.putIfAbsent(meal.getId(), meal);
+        return mealMap.get(meal.getId());
     }
 
     @Override
