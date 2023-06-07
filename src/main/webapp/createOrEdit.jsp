@@ -1,28 +1,24 @@
 <%@ page contentType="text/html;charset=utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
 <html>
 <head>
     <meta charset="UTF-8"/>
-    <title>Edit</title>
+    <title>Meal Form</title>
 </head>
 <body>
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h3>${param.action == 'edit' ?'Edit Meal' : 'Create Meal'}</h3>
 
-<c:if test="${not empty param.get('meal')}">
-    <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
-</c:if>
-<c:set var="isPresent" value="${not empty meal}"/>
-
 <form action="meals" method="post" name="editMeal">
-    <input type="hidden" name="id" value="${isPresent ? meal.id : -1}">
+    <input type="hidden" name="id" value="${meal.id}">
     <label>
         DateTime : <input type="datetime-local"
                           style="width: 180px;"
                           id="dateTime"
                           name="dateTime"
-                          value="${isPresent ? meal.dateTime : " "}"
+                          value="${meal.dateTime}"
                           required/>
     </label>
     <br><br>
@@ -41,12 +37,7 @@
     </label>
     <br><br>
     <button type="submit">Save</button>
-    <button><a href="meals" onclick="window.history.back()"></a>Cancel</button>
+    <button type="button" class="btn btn-primary" onclick="window.history.back();">Cancel</button>
 </form>
 </body>
-<script>
-    if (document.getElementById("dateTime").value === '') {
-        document.getElementById("dateTime").value = new Date().toISOString().slice(0, 16);
-    }
-</script>
 </html>
