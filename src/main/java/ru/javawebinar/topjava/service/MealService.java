@@ -5,6 +5,7 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
@@ -13,32 +14,31 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 public class MealService {
     private final MealRepository repository;
 
-
     public MealService(MealRepository repository) {
         this.repository = repository;
     }
 
-    public Meal create(Integer userId, Meal meal) {
+    public Meal create(int userId, Meal meal) {
         return repository.save(userId, meal);
     }
 
-    public void delete(Integer userId, int id) {
+    public void delete(int userId, int id) {
         checkNotFoundWithId(repository.delete(userId, id), id);
     }
 
-    public Meal get(Integer userId, int id) {
+    public Meal get(int userId, int id) {
         return checkNotFoundWithId(repository.get(userId, id), id);
     }
 
-    public List<Meal> getAll(Integer userId) {
-        return (List<Meal>) repository.getAll(userId);
+    public List<Meal> getAll(int userId) {
+        return new ArrayList<>(repository.getAll(userId));
     }
 
-    public List<Meal> getAllFilteredByDate(Integer userId, LocalDate from, LocalDate to) {
-        return (List<Meal>) repository.getAllFilteredByDate(userId, from, to);
+    public List<Meal> getAllFilteredByDate(int userId, LocalDate from, LocalDate to) {
+        return new ArrayList<>(repository.getAllFilteredByDate(userId, from, to));
     }
 
-    public void update(Integer userId, int id, Meal meal) {
-        checkNotFoundWithId(repository.save(userId, meal), id);
+    public void update(int userId, Meal meal) {
+        checkNotFoundWithId(repository.save(userId, meal), meal.getId());
     }
 }

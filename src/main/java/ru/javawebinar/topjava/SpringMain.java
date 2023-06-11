@@ -5,7 +5,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
@@ -26,12 +25,10 @@ public class SpringMain {
 
             //TESTING
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
-            for (Meal meal : MealsUtil.meals) {
-                mealRestController.create(meal);
-            }
+
             Meal meal = new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "TEST", 7777);
             meal.setId(1);
-            mealRestController.update(meal, 1);
+            mealRestController.update(meal);
             System.out.println(mealRestController.get(1));
 
             System.out.println(mealRestController.getFiltered(
