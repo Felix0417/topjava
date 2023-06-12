@@ -23,12 +23,12 @@ public class InMemoryMealRepository implements MealRepository {
 
     {
         MealsUtil.mealsOne.forEach(meal -> save(1, meal));
-        MealsUtil.mealsTwo.forEach(meal -> save(2, meal));
+//        MealsUtil.mealsTwo.forEach(meal -> save(2, meal));
     }
 
     @Override
     public Meal save(int userId, Meal meal) {
-        Map<Integer, Meal> meals = repository.getOrDefault(userId, new ConcurrentHashMap<>());
+        Map<Integer, Meal> meals = repository.computeIfAbsent(userId,m -> new ConcurrentHashMap<>());
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             meals.put(meal.getId(), meal);
@@ -59,7 +59,7 @@ public class InMemoryMealRepository implements MealRepository {
         Map<Integer, Meal> mealMap = repository.get(userId);
         return mealMap != null
                 ? mealMap.values().stream()
-                .filter(meal -> DateTimeUtil.isBetweenOpen(meal.getDate(), from, to))
+                .filter(meal -> DateTimeUtil.isBetweenOpen(meal.getDate(), from, to != null? to.plusDays(1) : null))
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList())
                 : Collections.emptyList();
