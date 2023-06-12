@@ -6,13 +6,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface MealRepository {
-    Meal save(Integer userId, Meal meal);
+    Meal save(int userId, Meal meal);
 
-    boolean delete(Integer userId, int id);
+    boolean delete(int userId, int id);
 
-    Meal get(Integer userId, int id);
+    Meal get(int userId, int id);
 
-    List<Meal> getAll(Integer userId);
+    List<Meal> getAll(int userId);
 
-    List<Meal> getAllFilteredByDate(Integer userId, LocalDate from, LocalDate to);
+    List<Meal> getAllFilteredByDate(int userId, LocalDate from, LocalDate to);
 }

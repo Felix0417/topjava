@@ -22,13 +22,12 @@ public class SpringMain {
             AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
             adminUserController.create(new User(null, "userName", "email@mail.ru", "password", Role.ADMIN));
 
-
             //TESTING
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
-
+            mealRestController.getAll();
             Meal meal = new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "TEST", 7777);
             meal.setId(1);
-            mealRestController.update(meal);
+            mealRestController.update(meal, meal.getId());
             System.out.println(mealRestController.get(1));
 
             System.out.println(mealRestController.getFiltered(
