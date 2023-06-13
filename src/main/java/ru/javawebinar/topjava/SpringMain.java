@@ -2,12 +2,14 @@ package ru.javawebinar.topjava;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.Arrays;
@@ -22,11 +24,14 @@ public class SpringMain {
 
             //TESTING
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
-//            mealRestController.getAll();
-//            Meal meal = new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "TEST", 7777);
-//            meal.setId(1);
-//            mealRestController.update(meal, meal.getId());
-//            System.out.println(mealRestController.get(1));
+            mealRestController.getAll();
+
+            mealRestController.update(new Meal(5, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "TEST", 7777), 5);
+            System.out.println(mealRestController.getAll());
+
+            mealRestController.delete(4);
+            mealRestController.delete( 7);
+            System.out.println(mealRestController.getAll());
 
             mealRestController.getAll();
             System.out.println(mealRestController.getFiltered(
@@ -34,14 +39,11 @@ public class SpringMain {
                     LocalDate.of(2020, Month.JANUARY, 31),
                     LocalTime.of(7, 0),
                     LocalTime.of(13, 0)));
-//            System.out.println(mealRestController.getFiltered(
-//                    null,
-//                    null,
-//                    LocalTime.of(7, 0),
-//                    LocalTime.of(12, 0)));
-//
-//            mealRestController.delete(1);
-//            System.out.println(mealRestController.getAll());
+            System.out.println(mealRestController.getFiltered(
+                    null,
+                    null,
+                    LocalTime.of(7, 0),
+                    LocalTime.of(12, 0)));
         }
     }
 }

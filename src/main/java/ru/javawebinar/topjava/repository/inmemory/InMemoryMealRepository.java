@@ -22,13 +22,13 @@ public class InMemoryMealRepository implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.mealsOne.forEach(meal -> save(1, meal));
-//        MealsUtil.mealsTwo.forEach(meal -> save(2, meal));
+        MealsUtil.mealsOfFirstUser.forEach(meal -> save(1, meal));
+        MealsUtil.mealsOfSecondUser.forEach(meal -> save(2, meal));
     }
 
     @Override
     public Meal save(int userId, Meal meal) {
-        Map<Integer, Meal> meals = repository.computeIfAbsent(userId,m -> new ConcurrentHashMap<>());
+        Map<Integer, Meal> meals = repository.computeIfAbsent(userId, k -> new ConcurrentHashMap<>());
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             meals.put(meal.getId(), meal);
@@ -40,7 +40,12 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int userId, int id) {
-        return repository.get(userId).remove(id) != null;
+        Map<Integer, Meal> mealMap = repository.get(userId);
+        if (mealMap != null) {
+            mealMap.remove(id);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -57,9 +62,10 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public List<Meal> getAllFilteredByDate(int userId, LocalDate from, LocalDate to) {
         Map<Integer, Meal> mealMap = repository.get(userId);
+        LocalDate toPlusDay = (to != null ? (to.equals(LocalDate.MAX) ? to : to.plusDays(1)) : null);
         return mealMap != null
                 ? mealMap.values().stream()
-                .filter(meal -> DateTimeUtil.isBetweenOpen(meal.getDate(), from, to != null? to.plusDays(1) : null))
+                .filter(meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), from, toPlusDay))
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList())
                 : Collections.emptyList();

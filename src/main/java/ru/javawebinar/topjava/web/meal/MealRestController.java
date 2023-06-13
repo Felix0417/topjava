@@ -7,7 +7,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
@@ -15,6 +14,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 @Controller
 public class MealRestController {
@@ -60,14 +60,14 @@ public class MealRestController {
     }
 
     public Meal create(Meal meal) {
-        ValidationUtil.checkNew(meal);
+        checkNew(meal);
         log.debug("create {}", meal);
         return service.create(SecurityUtil.authUserId(), meal);
     }
 
     public void update(Meal meal, int id) {
-        log.debug("update {} with id={}", meal, id);
         assureIdConsistent(meal, id);
+        log.debug("update {} with id={}", meal, id);
         service.update(SecurityUtil.authUserId(), meal);
     }
 }
