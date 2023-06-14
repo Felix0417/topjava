@@ -60,16 +60,15 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "filter":
-                String startDate = request.getParameter("startDate");
-                String endDate = request.getParameter("endDate");
-                String startTime = request.getParameter("startTime");
-                String endTime = request.getParameter("endTime");
-                request.setAttribute("meals",
-                        mealRestController.getFiltered(
-                                startDate.equals("") ? null : LocalDate.parse(startDate),
-                                endDate.equals("") ? null : LocalDate.parse(endDate),
-                                startTime.equals("") ? null : LocalTime.parse(startTime),
-                                endTime.equals("") ? null : LocalTime.parse(endTime)));
+                LocalDate startDate = parseDate(request.getParameter("startDate"));
+                LocalDate endDate = parseDate(request.getParameter("endDate"));
+                LocalTime startTime = parseTime(request.getParameter("startTime"));
+                LocalTime endTime = parseTime(request.getParameter("endTime"));
+                request.setAttribute("meals", mealRestController.getFiltered(startDate, endDate, startTime, endTime));
+                request.setAttribute("startDate", startDate);
+                request.setAttribute("endDate", endDate);
+                request.setAttribute("startTime", startTime);
+                request.setAttribute("endTime", endTime);
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":
@@ -84,6 +83,14 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private LocalDate parseDate(String date) {
+        return date.isEmpty() ? null : LocalDate.parse(date);
+    }
+
+    private LocalTime parseTime(String time) {
+        return time.isEmpty() ? null : LocalTime.parse(time);
     }
 
     @Override

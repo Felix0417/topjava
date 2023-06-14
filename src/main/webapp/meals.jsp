@@ -26,17 +26,17 @@
     <form method="get" action="meals">
         <input type="hidden" name="action" value="filter">
         <label for="startDate">От даты (включая)</label>
-        <input type="date" id="startDate" name="startDate" onchange="updateDate()">
+        <input type="date" id="startDate" name="startDate" value="${param.startDate}">
 
         <label for="startTime">От времени (включая)</label>
-        <input type="time" id="startTime" name="startTime" onchange="updateTime()">
+        <input type="time" id="startTime" name="startTime" value="${param.startTime}">
 
         <br><br>
         <label for="endDate">До даты (включая)</label>
-        <input type="date" id="endDate" name="endDate" onchange="updateDate()">
+        <input type="date" id="endDate" name="endDate" value="${param.endDate}">
 
         <label for="endTime">До времени (включая)</label>
-        <input type="time" id="endTime" name="endTime" onchange="updateTime()">
+        <input type="time" id="endTime" name="endTime" value="${param.endTime}">
         <br><br>
         <button type="submit">Отфильтровать</button>
     </form>
@@ -71,19 +71,4 @@
     </table>
 </section>
 </body>
-<script>
-    function updateDate() {
-        var startDateInput = document.getElementById("startDate");
-        var endDateInput = document.getElementById("endDate");
-        endDateInput.min = startDateInput.value;
-        startDateInput.max = endDateInput.value;
-    }
-
-    function updateTime() {
-        var startTimeInput = document.getElementById("startTime");
-        var endTimeInput = document.getElementById("endTime");
-        endTimeInput.min = startTimeInput.value;
-        startTimeInput.max = endTimeInput.value;
-    }
-</script>
 </html>
