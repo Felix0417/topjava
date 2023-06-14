@@ -14,11 +14,6 @@ public class UserServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
 
     @Override
-    public void init() throws ServletException {
-        SecurityUtil.setAuthUserId(1);
-    }
-
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("forward to users");
         request.getRequestDispatcher("/users.jsp").forward(request, response);
@@ -31,6 +26,6 @@ public class UserServlet extends HttpServlet {
         if (userId != null) {
             SecurityUtil.setAuthUserId(Integer.parseInt(userId));
         }
-        request.getRequestDispatcher("/index.html").forward(request, response);
+        response.sendRedirect("meals");
     }
 }
