@@ -29,8 +29,8 @@ public class SpringMain {
             mealRestController.update(new Meal(5, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "TEST", 7777), 5);
             System.out.println(mealRestController.getAll());
 
-            mealRestController.delete(4);
-            mealRestController.delete( 7);
+            mealRestController.delete(400);
+            mealRestController.delete(7);
             System.out.println(mealRestController.getAll());
 
             mealRestController.getAll();
