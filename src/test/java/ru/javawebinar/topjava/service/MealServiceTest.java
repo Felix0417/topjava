@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -15,8 +14,7 @@ import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
@@ -49,8 +47,8 @@ public class MealServiceTest {
     @Test
     public void duplicateMealDate() {
         assertThrows(DataAccessException.class,
-                () -> service.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0),
-                        "Duplicate", 100), UserTestData.USER_ID));
+                () -> service.create(new Meal(MealTestData.userMeal1.getDateTime(), "Duplicate", 100),
+                        UserTestData.USER_ID));
     }
 
     @Test
@@ -65,13 +63,24 @@ public class MealServiceTest {
     }
 
     @Test
+    public void deletedFromAnotherUser() {
+        assertThrows(NotFoundException.class, () -> service.delete(MealTestData.userMeal1.getId(), UserTestData.NOT_FOUND));
+    }
+
+    @Test
     public void get() {
-        Assert.assertThrows(NotFoundException.class, () -> service.get(10, 100));
+        Meal meal = new Meal(MealTestData.userMeal1);
+        MealTestData.assertMatch(meal, service.get(meal.getId(), UserTestData.USER_ID));
     }
 
     @Test
     public void getNotFound() {
         assertThrows(NotFoundException.class, () -> service.get(MealTestData.NOT_FOUND, UserTestData.USER_ID));
+    }
+
+    @Test
+    public void getFromAnotherUser() {
+        assertThrows(NotFoundException.class, () -> service.get(MealTestData.userMeal1.getId(), UserTestData.NOT_FOUND));
     }
 
     @Test
@@ -82,6 +91,12 @@ public class MealServiceTest {
     }
 
     @Test
+    public void updateFromAnotherUser() {
+        Meal updated = MealTestData.getUpdated();
+        assertThrows(NotFoundException.class, () -> service.update(updated, UserTestData.NOT_FOUND));
+    }
+
+    @Test
     public void getAll() {
         List<Meal> all = service.getAll(UserTestData.USER_ID);
         MealTestData.assertMatch(all, MealTestData.meals);
@@ -89,6 +104,13 @@ public class MealServiceTest {
 
     @Test
     public void getBetweenHalfOpen() {
-        service.getBetweenInclusive(null, null, UserTestData.USER_ID);
+        MealTestData.assertMatch(MealTestData.meals, service.getBetweenInclusive(null, null, UserTestData.USER_ID));
+    }
+
+    @Test
+    public void getBetweenHalfOpenToFirstUser() {
+        LocalDate mealDate = MealTestData.userMeal1.getDateTime().toLocalDate();
+        MealTestData.assertMatch(MealTestData.meals,
+                service.getBetweenInclusive(mealDate.minusDays(2), mealDate.plusDays(2), UserTestData.USER_ID));
     }
 }
