@@ -2,6 +2,7 @@ package ru.javawebinar.topjava;
 
 import ru.javawebinar.topjava.model.Meal;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
@@ -14,6 +15,8 @@ public class MealTestData {
     public static final int USER_MEAL_ID = START_SEQ + 3;
     public static final int ADMIN_MEAL_ID = START_SEQ + 10;
     public static final int NOT_FOUND = 100;
+    public static final LocalDate dateBefore = LocalDate.of(2020, Month.JANUARY, 29);
+    public static final LocalDate dateAfter = LocalDate.of(2020, Month.JANUARY, 30);
 
     public static final Meal userMeal1 = new Meal(USER_MEAL_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак USER", 500);
     public static final Meal userMeal2 = new Meal(USER_MEAL_ID + 1, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед USER", 1000);
@@ -26,8 +29,9 @@ public class MealTestData {
     public static final Meal adminMeal2 = new Meal(ADMIN_MEAL_ID + 1, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед ADMIN", 1000);
     public static final Meal adminMeal3 = new Meal(ADMIN_MEAL_ID + 2, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин ADMIN", 500);
 
-    public static List<Meal> meals = Arrays.asList(userMeal7, userMeal6, userMeal5, userMeal4, userMeal3,
+    public static final List<Meal> meals = Arrays.asList(userMeal7, userMeal6, userMeal5, userMeal4, userMeal3,
             userMeal2, userMeal1);
+    public static final List<Meal> mealsBetweenDates = Arrays.asList(userMeal3, userMeal2, userMeal1);
 
     public static Meal getNew() {
         return new Meal(null, LocalDateTime.of(1900, Month.JANUARY, 1, 12, 1), "Новая еда", 1000);
@@ -42,7 +46,7 @@ public class MealTestData {
     }
 
     public static void assertMatch(Meal actual, Meal expected) {
-        assertThat(actual).usingRecursiveComparison().ignoringFields().isEqualTo(expected);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
@@ -50,6 +54,6 @@ public class MealTestData {
     }
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
-        assertThat(actual).usingRecursiveFieldByFieldElementComparatorIgnoringFields("description").isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 }

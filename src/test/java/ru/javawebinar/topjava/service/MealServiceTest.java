@@ -14,10 +14,10 @@ import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
+import static ru.javawebinar.topjava.MealTestData.USER_MEAL_ID;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
@@ -64,23 +64,22 @@ public class MealServiceTest {
 
     @Test
     public void deletedFromAnotherUser() {
-        assertThrows(NotFoundException.class, () -> service.delete(MealTestData.userMeal1.getId(), UserTestData.NOT_FOUND));
+        assertThrows(NotFoundException.class, () -> service.delete(USER_MEAL_ID, UserTestData.ADMIN_ID));
     }
 
     @Test
     public void get() {
-        Meal meal = new Meal(MealTestData.userMeal1);
-        MealTestData.assertMatch(meal, service.get(meal.getId(), UserTestData.USER_ID));
+        MealTestData.assertMatch(service.get(MealTestData.USER_MEAL_ID, UserTestData.USER_ID), MealTestData.userMeal1);
     }
 
     @Test
     public void getNotFound() {
-        assertThrows(NotFoundException.class, () -> service.get(MealTestData.NOT_FOUND, UserTestData.USER_ID));
+        assertThrows(NotFoundException.class, () -> service.get(MealTestData.NOT_FOUND, UserTestData.ADMIN_ID));
     }
 
     @Test
     public void getFromAnotherUser() {
-        assertThrows(NotFoundException.class, () -> service.get(MealTestData.userMeal1.getId(), UserTestData.NOT_FOUND));
+        assertThrows(NotFoundException.class, () -> service.get(USER_MEAL_ID, UserTestData.ADMIN_ID));
     }
 
     @Test
@@ -93,7 +92,7 @@ public class MealServiceTest {
     @Test
     public void updateFromAnotherUser() {
         Meal updated = MealTestData.getUpdated();
-        assertThrows(NotFoundException.class, () -> service.update(updated, UserTestData.NOT_FOUND));
+        assertThrows(NotFoundException.class, () -> service.update(updated, UserTestData.ADMIN_ID));
     }
 
     @Test
@@ -104,13 +103,12 @@ public class MealServiceTest {
 
     @Test
     public void getBetweenHalfOpen() {
-        MealTestData.assertMatch(MealTestData.meals, service.getBetweenInclusive(null, null, UserTestData.USER_ID));
+        MealTestData.assertMatch(service.getBetweenInclusive(null, null, UserTestData.USER_ID), MealTestData.meals);
     }
 
     @Test
     public void getBetweenHalfOpenToFirstUser() {
-        LocalDate mealDate = MealTestData.userMeal1.getDateTime().toLocalDate();
-        MealTestData.assertMatch(MealTestData.meals,
-                service.getBetweenInclusive(mealDate.minusDays(2), mealDate.plusDays(2), UserTestData.USER_ID));
+        MealTestData.assertMatch(service.getBetweenInclusive(MealTestData.dateBefore, MealTestData.dateAfter, UserTestData.USER_ID),
+                MealTestData.mealsBetweenDates);
     }
 }

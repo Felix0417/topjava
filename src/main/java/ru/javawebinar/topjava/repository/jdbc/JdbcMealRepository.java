@@ -16,10 +16,11 @@ import java.util.List;
 
 @Repository
 public class JdbcMealRepository implements MealRepository {
+    private static final BeanPropertyRowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertMeal;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private static final BeanPropertyRowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
+
 
     @Autowired
     public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -69,6 +70,6 @@ public class JdbcMealRepository implements MealRepository {
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         return jdbcTemplate.query("SELECT * FROM meals WHERE user_id=? " +
-                "AND  datetime BETWEEN ? AND ? ORDER BY datetime DESC ", ROW_MAPPER, userId, startDateTime, endDateTime);
+                "AND  datetime > ? AND datetime < ? ORDER BY datetime DESC ", ROW_MAPPER, userId, startDateTime, endDateTime);
     }
 }
