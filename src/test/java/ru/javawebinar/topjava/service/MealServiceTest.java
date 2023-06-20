@@ -102,13 +102,13 @@ public class MealServiceTest {
     }
 
     @Test
-    public void getBetweenBetweenInclusive() {
+    public void getBetweenInclusive() {
         MealTestData.assertMatch(service.getBetweenInclusive(null, null, UserTestData.USER_ID), MealTestData.meals);
     }
 
     @Test
-    public void getBetweenBetweenInclusiveToFirstUser() {
-        MealTestData.assertMatch(service.getBetweenInclusive(MealTestData.DATE_BEFORE, MealTestData.DATE_AFTER, UserTestData.USER_ID),
+    public void getBetweenInclusiveToFirstUser() {
+        MealTestData.assertMatch(service.getBetweenInclusive(MealTestData.DATE_FROM, MealTestData.DATE_TO, UserTestData.USER_ID),
                 MealTestData.mealsBetweenDates);
     }
 }
