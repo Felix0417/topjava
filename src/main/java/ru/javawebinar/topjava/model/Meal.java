@@ -1,16 +1,44 @@
 package ru.javawebinar.topjava.model;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import org.hibernate.validator.constraints.Range;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@NamedQueries({
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m where m.id=:id AND m.user = :user"),
+        @NamedQuery(name = Meal.BY_ID, query = "SELECT m FROM Meal m WHERE  m.id=:id AND m.user = :user"),
+        @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT m FROM Meal m WHERE m.user = :user ORDER BY m.dateTime DESC"),
+        @NamedQuery(name = Meal.ALL_SORTED_BY_DATE, query = "SELECT m FROM Meal m WHERE m.user = :user  " +
+                "AND m.dateTime >= :date_from AND m.dateTime < :date_to ORDER BY m.dateTime DESC")
+})
+@Entity
+@Table(name = "meal")
 public class Meal extends AbstractBaseEntity {
+
+    public static final String DELETE = "Meal.delete";
+
+    public static final String BY_ID = "Meal.getById";
+
+    public static final String ALL_SORTED = "Meal.getAll";
+
+    public static final String ALL_SORTED_BY_DATE = "Meal.getAllSorted";
+
+    @Column(name = "date_time", nullable = false, columnDefinition = "timestamp default now()", updatable = true)
+    @NotNull
     private LocalDateTime dateTime;
 
+    @Column(name = "description", nullable = false)
+    @NotEmpty
     private String description;
 
+    @Column(name = "calories", nullable = false, columnDefinition = "int default 0")
+    @Range(min = 0L, max = 10000)
+    @NotNull
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
