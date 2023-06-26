@@ -1,7 +1,10 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.*;
-import org.junit.rules.TestName;
+import org.junit.AfterClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -32,60 +35,62 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+    public static Map<String, Long> methodDuration = new LinkedHashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void succeeded(long nanos, Description description) {
+            String testName = description.getMethodName();
+            long durationInMilliseconds = TimeUnit.NANOSECONDS.toMillis(nanos);
+            methodDuration.put(testName, durationInMilliseconds);
+            log.debug(String.format("Test %s, spent %d milliseconds",
+                    testName, durationInMilliseconds));
+        }
+    };
 
     @Autowired
     private MealService service;
 
-    @Rule
-    public final TestName name = new TestName();
-
-    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
-
-    public static Map<String, Long> methodDuration = new LinkedHashMap<>();
-    public static Long startTime;
-
-    @Before
-    public void startMethod() {
-        startTime = System.currentTimeMillis();
-    }
-
-    @After
-    public void afterMethod() {
-        Long endTime = System.currentTimeMillis();
-        long diff = endTime - startTime;
-        methodDuration.put(name.getMethodName(), diff);
-        log.debug("Method '{}' took {} ms", name.getMethodName(), diff);
-    }
-
     @AfterClass
     public static void printAllResult() {
+        String head = " Method                                            | Duration, ms\n";
+        String dash = "-----------------------------------------------------------------\n";
+        StringBuilder builder = new StringBuilder(dash + head + dash);
         for (Map.Entry<String, Long> map : methodDuration.entrySet()) {
-            log.debug("Method {} took {} ms", map.getKey(), map.getValue());
+            builder.append(fillingTheTable(map.getKey(), map.getValue()));
         }
+        builder.append(dash);
+        System.out.println(builder);
     }
 
+    private static StringBuilder fillingTheTable(String method, long time) {
+        StringBuilder sb = new StringBuilder(" " + method);
+        for (int i = 0; i < 50 - method.length(); i++) {
+            sb.append(" ");
+        }
+        sb.append("| ").append(time).append(" \n");
+        return sb;
+    }
 
     @Test
-    @Transactional
     public void delete() {
         service.delete(MEAL1_ID, USER_ID);
         assertThrows(NotFoundException.class, () -> service.get(MEAL1_ID, USER_ID));
     }
 
     @Test
-    @Transactional
     public void deleteNotFound() {
         assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND, USER_ID));
     }
 
     @Test
-    @Transactional
     public void deleteNotOwn() {
         assertThrows(NotFoundException.class, () -> service.delete(MEAL1_ID, ADMIN_ID));
     }
 
     @Test
-    @Transactional
     public void create() {
         Meal created = service.create(getNew(), USER_ID);
         int newId = created.id();
@@ -118,7 +123,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void update() {
         Meal updated = getUpdated();
         service.update(updated, USER_ID);
@@ -126,7 +130,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void updateNotOwn() {
         assertThrows(NotFoundException.class, () -> service.update(meal1, ADMIN_ID));
         MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), meal1);

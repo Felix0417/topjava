@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
+@Transactional(readOnly = true)
 public class JpaMealRepository implements MealRepository {
 
     @PersistenceContext
@@ -27,18 +28,12 @@ public class JpaMealRepository implements MealRepository {
             em.persist(meal);
             return meal;
         }
-
-        List<Meal> mealsById = em.createNamedQuery(Meal.BY_ID, Meal.class)
-                .setParameter("id", meal.getId())
-                .setParameter("user", em.find(User.class, userId))
-                .getResultList();
-
-        if (mealsById.isEmpty()) {
+        Meal mealById = get(meal.id(), userId);
+        if (mealById == null) {
             return null;
         }
         meal.setUser(ref);
         return em.merge(meal);
-
     }
 
     @Override
@@ -46,7 +41,7 @@ public class JpaMealRepository implements MealRepository {
     public boolean delete(int id, int userId) {
         return em.createNamedQuery(Meal.DELETE)
                 .setParameter("id", id)
-                .setParameter("user", em.find(User.class, userId))
+                .setParameter("user_id", userId)
                 .executeUpdate() != 0;
     }
 
@@ -54,7 +49,7 @@ public class JpaMealRepository implements MealRepository {
     public Meal get(int id, int userId) {
         List<Meal> meals = em.createNamedQuery(Meal.BY_ID, Meal.class)
                 .setParameter("id", id)
-                .setParameter("user", em.find(User.class, userId))
+                .setParameter("user_id", userId)
                 .getResultList();
         return DataAccessUtils.singleResult(meals);
     }
@@ -62,7 +57,7 @@ public class JpaMealRepository implements MealRepository {
     @Override
     public List<Meal> getAll(int userId) {
         return em.createNamedQuery(Meal.ALL_SORTED, Meal.class)
-                .setParameter("user", em.find(User.class, userId))
+                .setParameter("user_id", userId)
                 .getResultList();
     }
 
@@ -71,7 +66,7 @@ public class JpaMealRepository implements MealRepository {
         return em.createNamedQuery(Meal.ALL_SORTED_BY_DATE, Meal.class)
                 .setParameter("date_from", startDateTime)
                 .setParameter("date_to", endDateTime)
-                .setParameter("user", em.find(User.class, userId))
+                .setParameter("user_id", userId)
                 .getResultList();
     }
 }
