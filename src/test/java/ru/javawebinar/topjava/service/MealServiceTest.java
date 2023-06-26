@@ -63,11 +63,6 @@ public class MealServiceTest {
         protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
             logInfo(description, nanos);
         }
-
-        @Override
-        protected void finished(long nanos, Description description) {
-            logInfo(description, nanos);
-        }
     };
 
     @Autowired
