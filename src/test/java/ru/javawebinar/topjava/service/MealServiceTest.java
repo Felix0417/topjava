@@ -36,50 +36,50 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-    private final static Map<String, Long> methodDuration = new LinkedHashMap<>();
+    private static final Map<String, Long> methodDuration = new LinkedHashMap<>();
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
+        private void logInfo(Description description, long nanos) {
+            String testName = description.getMethodName();
+            long durationInMilliseconds = TimeUnit.NANOSECONDS.toMillis(nanos);
+            methodDuration.put(testName, durationInMilliseconds);
+            log.debug(String.format("Test %s, spent %d milliseconds",
+                    testName, durationInMilliseconds));
+        }
+
         @Override
         protected void succeeded(long nanos, Description description) {
-            logInfo(description, "success", nanos);
+            logInfo(description, nanos);
         }
 
         @Override
         protected void failed(long nanos, Throwable e, Description description) {
-            logInfo(description, "failed", nanos);
+            logInfo(description, nanos);
         }
 
         @Override
         protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
-            logInfo(description, "skipped", nanos);
+            logInfo(description, nanos);
         }
 
         @Override
         protected void finished(long nanos, Description description) {
-            logInfo(description, "finished", nanos);
+            logInfo(description, nanos);
         }
     };
 
     @Autowired
     private MealService service;
 
-    private static void logInfo(Description description, String status, long nanos) {
-        String testName = description.getMethodName();
-        long durationInMilliseconds = TimeUnit.NANOSECONDS.toMillis(nanos);
-        methodDuration.put(testName, durationInMilliseconds);
-        log.debug(String.format("Test %s is %s, spent %d milliseconds",
-                testName, status, durationInMilliseconds));
-    }
-
     @AfterClass
     public static void printAllResult() {
         String head = String.format("\n\n%-45s %s \n", "Method", "Duration, ms");
         String dash = "------------------------------------------------------------\n";
         StringBuilder builder = new StringBuilder().append(head).append(dash);
-        for (Map.Entry<String, Long> map : methodDuration.entrySet()) {
-            builder.append(String.format("%-45s %d\n", map.getKey(), map.getValue()));
+        for (Map.Entry<String, Long> entry : methodDuration.entrySet()) {
+            builder.append(String.format("%-45s %d\n", entry.getKey(), entry.getValue()));
         }
         builder.append(dash);
         log.debug(builder.toString());
