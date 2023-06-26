@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
-import org.junit.AssumptionViolatedException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Stopwatch;
@@ -50,17 +49,7 @@ public class MealServiceTest {
         }
 
         @Override
-        protected void succeeded(long nanos, Description description) {
-            logInfo(description, nanos);
-        }
-
-        @Override
-        protected void failed(long nanos, Throwable e, Description description) {
-            logInfo(description, nanos);
-        }
-
-        @Override
-        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
+        protected void finished(long nanos, Description description) {
             logInfo(description, nanos);
         }
     };
