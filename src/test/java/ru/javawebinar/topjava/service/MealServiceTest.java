@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
+import org.junit.AssumptionViolatedException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Stopwatch;
@@ -35,43 +36,53 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-    public static Map<String, Long> methodDuration = new LinkedHashMap<>();
+    private final static Map<String, Long> methodDuration = new LinkedHashMap<>();
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void succeeded(long nanos, Description description) {
-            String testName = description.getMethodName();
-            long durationInMilliseconds = TimeUnit.NANOSECONDS.toMillis(nanos);
-            methodDuration.put(testName, durationInMilliseconds);
-            log.debug(String.format("Test %s, spent %d milliseconds",
-                    testName, durationInMilliseconds));
+            logInfo(description, "success", nanos);
+        }
+
+        @Override
+        protected void failed(long nanos, Throwable e, Description description) {
+            logInfo(description, "failed", nanos);
+        }
+
+        @Override
+        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
+            logInfo(description, "skipped", nanos);
+        }
+
+        @Override
+        protected void finished(long nanos, Description description) {
+            logInfo(description, "finished", nanos);
         }
     };
 
     @Autowired
     private MealService service;
 
-    @AfterClass
-    public static void printAllResult() {
-        String head = " Method                                            | Duration, ms\n";
-        String dash = "-----------------------------------------------------------------\n";
-        StringBuilder builder = new StringBuilder(dash + head + dash);
-        for (Map.Entry<String, Long> map : methodDuration.entrySet()) {
-            builder.append(fillingTheTable(map.getKey(), map.getValue()));
-        }
-        builder.append(dash);
-        System.out.println(builder);
+    private static void logInfo(Description description, String status, long nanos) {
+        String testName = description.getMethodName();
+        long durationInMilliseconds = TimeUnit.NANOSECONDS.toMillis(nanos);
+        methodDuration.put(testName, durationInMilliseconds);
+        log.debug(String.format("Test %s is %s, spent %d milliseconds",
+                testName, status, durationInMilliseconds));
     }
 
-    private static StringBuilder fillingTheTable(String method, long time) {
-        StringBuilder sb = new StringBuilder(" " + method);
-        for (int i = 0; i < 50 - method.length(); i++) {
-            sb.append(" ");
+    @AfterClass
+    public static void printAllResult() {
+        String head = String.format("\n\n%-45s %s \n", "Method", "Duration, ms");
+        String dash = "------------------------------------------------------------\n";
+        StringBuilder builder = new StringBuilder().append(head).append(dash);
+        for (Map.Entry<String, Long> map : methodDuration.entrySet()) {
+            builder.append(String.format("%-45s %d\n", map.getKey(), map.getValue()));
         }
-        sb.append("| ").append(time).append(" \n");
-        return sb;
+        builder.append(dash);
+        log.debug(builder.toString());
     }
 
     @Test
