@@ -13,16 +13,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Meal m SET m.dateTime = :datetime, m.calories= :calories," +
-            " m.description=:desc where m.id=:id and m.user.id=:userId")
-    int save(@Param("id") int id,
-             @Param("datetime") LocalDateTime dateTime,
-             @Param("desc") String description,
-             @Param("calories") int calories,
-             @Param("userId") Integer userId);
-
     @Query("select m from Meal m where m.id=:id AND m.user.id=:userId")
     Meal findById(@Param("id") int id, @Param("userId") int userId);
 

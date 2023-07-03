@@ -18,7 +18,7 @@ public abstract class AbstractJdbcMealRepository implements MealRepository {
 
     protected static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 
-    private final JdbcTemplate jdbcTemplate;
+    protected final JdbcTemplate jdbcTemplate;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -75,5 +75,11 @@ public abstract class AbstractJdbcMealRepository implements MealRepository {
     }
 
     @Override
-    public abstract List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId);
+    public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM meal WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC",
+                ROW_MAPPER, userId, getDateTime(startDateTime), getDateTime(endDateTime));
+    }
+
+    protected abstract <T> T getDateTime(LocalDateTime dateTime);
 }
