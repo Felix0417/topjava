@@ -9,7 +9,6 @@ import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
@@ -25,7 +24,7 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
              @Param("userId") Integer userId);
 
     @Query("select m from Meal m where m.id=:id AND m.user.id=:userId")
-    Optional<Meal> findById(@Param("id") int id, @Param("userId") int userId);
+    Meal findById(@Param("id") int id, @Param("userId") int userId);
 
     @Transactional
     @Modifying
@@ -33,7 +32,7 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     int delete(@Param("id") int id, @Param("userId") int userId);
 
     @Query("SELECT m FROM Meal m where m.user.id=:userId ORDER BY m.dateTime DESC")
-    List<Meal> findAllById(@Param("userId") int userId);
+    List<Meal> findAllByMealId(@Param("userId") int userId);
 
     @Query("SELECT m FROM Meal m WHERE m.user.id=:userId AND m.dateTime >= :startDateTime AND m.dateTime < :endDateTime " +
             "ORDER BY m.dateTime DESC")
@@ -41,7 +40,7 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
                               @Param("endDateTime") LocalDateTime endDateTime,
                               @Param("userId") int userId);
 
-//    https://stackoverflow.com/questions/5903774/ordering-a-join-fetched-collection-in-jpa-using-jpql-hql
-    @Query("SELECT m from Meal m LEFT JOIN FETCH m.user WHERE m.id=:id AND m.user.id=:userId")
-    Optional<Meal> getWithUser(@Param("id") int id, @Param("userId") int userId);
+    //    https://stackoverflow.com/questions/5903774/ordering-a-join-fetched-collection-in-jpa-using-jpql-hql
+    @Query("SELECT m from Meal m JOIN FETCH m.user WHERE m.id=:id AND m.user.id=:userId")
+    Meal getWithUser(@Param("id") int id, @Param("userId") int userId);
 }

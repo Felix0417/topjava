@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public class DataJpaUserRepository implements UserRepository {
-    private static final Sort SORT_NAME_EMAIL = Sort.by(Sort.Direction.ASC, "name", "email", "meals");
+    private static final Sort SORT_NAME_EMAIL = Sort.by(Sort.Direction.ASC, "name", "email");
 
     private final CrudUserRepository crudRepository;
 
@@ -44,6 +44,6 @@ public class DataJpaUserRepository implements UserRepository {
 
     @Override
     public User getWithMeals(int id) {
-        return crudRepository.getWithMeals(id).orElse(null);
+        return crudRepository.getWithMeals(id);
     }
 }

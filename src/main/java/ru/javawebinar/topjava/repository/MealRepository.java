@@ -21,7 +21,8 @@ public interface MealRepository {
     // ORDERED dateTime desc
     List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId);
 
+//    https://stackoverflow.com/questions/10572643/optional-methods-in-java-interface/41293086?_x_tr_sl=auto&_x_tr_tl=ru&_x_tr_hl=ru#41293086
     default Meal getWithUser(int id, int userId) {
-        return null;
+        throw  new UnsupportedOperationException();
     }
 }

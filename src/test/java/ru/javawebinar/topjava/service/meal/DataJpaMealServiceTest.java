@@ -1,24 +1,24 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.meal;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
+import ru.javawebinar.topjava.Profiles;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import static org.junit.Assert.assertThrows;
+import static ru.javawebinar.topjava.MealTestData.NOT_FOUND;
 import static ru.javawebinar.topjava.MealTestData.*;
-import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
-import static ru.javawebinar.topjava.UserTestData.USER_ID;
+import static ru.javawebinar.topjava.UserTestData.*;
 
-@ActiveProfiles(profiles = "datajpa")
-public class MealDataJpaServiceTest extends AbstractMealServiceTest {
-
-    @Autowired
-    private MealService service;
+@ActiveProfiles(Profiles.DATAJPA)
+public class DataJpaMealServiceTest extends AbstractMealServiceTest {
 
     @Test
     public void getWithUser() {
-        MEAL_MATCHER.assertMatch(service.getWithUser(MEAL1_ID, USER_ID), meal1);
+        Meal meal = service.getWithUser(MEAL1_ID, USER_ID);
+        MEAL_MATCHER.assertMatch(meal, meal1);
+        USER_MATCHER.assertMatch(meal.getUser(), user);
     }
 
     @Test
