@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Profile(Profiles.POSTGRES_DB)
 public class PostgresJdbcMealRepository extends AbstractJdbcMealRepository {
 
-
     public PostgresJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
     }
