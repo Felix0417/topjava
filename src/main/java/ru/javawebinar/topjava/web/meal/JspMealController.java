@@ -1,7 +1,5 @@
-package ru.javawebinar.topjava.web;
+package ru.javawebinar.topjava.web.meal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.web.meal.AbstractMealController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -27,15 +24,13 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 @RequestMapping("/meals")
 public class JspMealController extends AbstractMealController {
 
-    private static final Logger log = LoggerFactory.getLogger(JspMealController.class);
-
     @Autowired
     public JspMealController(MealService service) {
         super(service);
     }
 
 
-    @GetMapping()
+    @GetMapping
     public String getAll(HttpServletRequest request) {
         log.info("meals");
         request.setAttribute("meals", getAll());
@@ -76,7 +71,6 @@ public class JspMealController extends AbstractMealController {
         delete(id);
         return "redirect:/meals";
     }
-
 
     @PostMapping("/save")
     public String save(HttpServletRequest request) throws UnsupportedEncodingException {

@@ -60,7 +60,9 @@ public class JpaUserRepository implements UserRepository {
     public User getByEmail(String email) {
         return em.createNamedQuery(User.BY_EMAIL, User.class)
                 .setParameter(1, email)
-                .getSingleResult();
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

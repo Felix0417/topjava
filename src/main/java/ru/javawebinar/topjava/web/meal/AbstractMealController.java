@@ -18,12 +18,13 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 
 public abstract class AbstractMealController {
-    private static final Logger log = LoggerFactory.getLogger(AbstractMealController.class);
+    protected final Logger log;
 
     protected final MealService service;
 
     public AbstractMealController(MealService service) {
         this.service = service;
+        this.log = LoggerFactory.getLogger(this.getClass());
     }
 
     public Meal get(int id) {

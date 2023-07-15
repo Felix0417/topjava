@@ -2,9 +2,12 @@ package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Repository
@@ -34,7 +37,8 @@ public class DataJpaUserRepository implements UserRepository {
 
     @Override
     public User getByEmail(String email) {
-        return crudRepository.getByEmail(email);
+        User user = crudRepository.getByEmail(email);
+        return user;
     }
 
     @Override
@@ -44,6 +48,12 @@ public class DataJpaUserRepository implements UserRepository {
 
     @Override
     public User getWithMeals(int id) {
-        return crudRepository.getWithMeals(id);
+        User user = crudRepository.getWithMeals(id);
+        if (user != null) {
+            List<Meal> mealList = new ArrayList<>(new HashSet<>(user.getMeals()));
+            user.setMeals(mealList);
+            return user;
+        }
+        return null;
     }
 }

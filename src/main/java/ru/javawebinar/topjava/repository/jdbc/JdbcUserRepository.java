@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional(readOnly = true)
@@ -74,21 +75,24 @@ public class JdbcUserRepository implements UserRepository {
         if (!isNew) {
             jdbcTemplate.update("DELETE FROM user_role WHERE user_id=?", id);
         }
-        String createSql = "INSERT INTO user_role ( role, user_id) VALUES (?,?)";
-        this.jdbcTemplate.batchUpdate(
-                createSql, new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        Role[] rolesArray = roles.toArray(new Role[0]);
-                        ps.setString(1, rolesArray[i].toString());
-                        ps.setLong(2, id);
-                    }
 
-                    @Override
-                    public int getBatchSize() {
-                        return roles.size();
-                    }
-                });
+        if (!roles.isEmpty()) {
+            String createSql = "INSERT INTO user_role ( role, user_id) VALUES (?,?)";
+            this.jdbcTemplate.batchUpdate(
+                    createSql, new BatchPreparedStatementSetter() {
+                        @Override
+                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+                            Role[] rolesArray = roles.toArray(new Role[0]);
+                            ps.setString(1, rolesArray[i].toString());
+                            ps.setLong(2, id);
+                        }
+
+                        @Override
+                        public int getBatchSize() {
+                            return roles.size();
+                        }
+                    });
+        }
     }
 
     @Override
@@ -114,35 +118,48 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         String sql = "SELECT * FROM users LEFT JOIN user_role ur on users.id = ur.user_id  ORDER BY name, email";
-        List<User> users = jdbcTemplate.query(sql, getExtractor());
-        return users == null ? null : users.stream().toList();
+        return jdbcTemplate.query(sql, getExtractor());
     }
 
     //    https://coderlessons.com/tutorials/java-tekhnologii/uznai-vesnu-jdbc/spring-jdbc-interfeis-resultsetextractor
     private ResultSetExtractor<List<User>> getExtractor() {
-        return extractor -> {
-            Map<Integer, User> userMap = new LinkedHashMap<>();
-            User user = null;
-            while (extractor.next()) {
-                int id = extractor.getInt("id");
-                if (!userMap.containsKey(id)) {
-                    user = new User();
-                    user.setId(id);
-                    user.setName(extractor.getString("name"));
-                    user.setEmail(extractor.getString("email"));
-                    user.setPassword(extractor.getString("password"));
-                    user.setEnabled(extractor.getBoolean("enabled"));
-                    user.setRegistered(extractor.getDate("registered"));
-                    user.setCaloriesPerDay(extractor.getInt("calories_per_day"));
-                    user.setRoles(new HashSet<>());
-                    userMap.put(user.getId(), user);
-                }
-                String role = extractor.getString("role");
+        return resultSet -> {
+            Map<Integer, List<User>> userMap = new LinkedHashMap<>();
+            User user;
+            while (resultSet.next()) {
+                user = new User();
+                int id = resultSet.getInt("id");
+                user.setId(id);
+                user.setName(resultSet.getString("name"));
+                user.setEmail(resultSet.getString("email"));
+                user.setPassword(resultSet.getString("password"));
+                user.setEnabled(resultSet.getBoolean("enabled"));
+                user.setRegistered(resultSet.getDate("registered"));
+                user.setCaloriesPerDay(resultSet.getInt("calories_per_day"));
+                user.setRoles(new HashSet<>());
+
+                String role = resultSet.getString("role");
                 if (role != null) {
                     user.getRoles().add(Role.valueOf(role));
                 }
+                if (userMap.containsKey(id)) {
+                    userMap.get(id).add(user);
+                } else {
+                    List<User> list = new ArrayList<>();
+                    list.add(user);
+                    userMap.put(id, list);
+                }
             }
-            return new ArrayList<>(userMap.values());
+            List<User> resultUsers = new ArrayList<>();
+            for (List<User> userList : userMap.values()) {
+                user = userList.get(0);
+                user.setRoles(userList
+                        .stream()
+                        .flatMap(user1 -> user1.getRoles().stream())
+                        .collect(Collectors.toSet()));
+                resultUsers.add(user);
+            }
+            return resultUsers;
         };
     }
 }
