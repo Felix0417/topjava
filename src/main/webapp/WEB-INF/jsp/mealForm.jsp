@@ -10,9 +10,9 @@
 <section>
     <spring:message code="meal.form.add" var="create"/>
     <spring:message code="meal.form.update" var="update"/>
-    <h2>${param.action == 'create' ? create : update}</h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-    <form method="post" action="meals/save">
+    <h2>${empty meal.id ? create : update}</h2>
+    <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.update"/></dt>

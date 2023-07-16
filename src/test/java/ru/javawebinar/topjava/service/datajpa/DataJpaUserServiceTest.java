@@ -14,7 +14,7 @@ import static ru.javawebinar.topjava.Profiles.DATAJPA;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 @ActiveProfiles(DATAJPA)
-@ContextConfiguration({"classpath:spring/override-cache.xml"})
+@ContextConfiguration({"classpath:spring/override-hibernate-cache.xml"})
 public class DataJpaUserServiceTest extends AbstractUserServiceTest {
     @Test
     public void getWithMeals() {

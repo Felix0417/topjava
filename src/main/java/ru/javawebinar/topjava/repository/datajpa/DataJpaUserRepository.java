@@ -6,8 +6,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Repository
@@ -37,8 +35,7 @@ public class DataJpaUserRepository implements UserRepository {
 
     @Override
     public User getByEmail(String email) {
-        User user = crudRepository.getByEmail(email);
-        return user;
+        return crudRepository.getByEmail(email);
     }
 
     @Override
@@ -50,7 +47,9 @@ public class DataJpaUserRepository implements UserRepository {
     public User getWithMeals(int id) {
         User user = crudRepository.getWithMeals(id);
         if (user != null) {
-            List<Meal> mealList = new ArrayList<>(new HashSet<>(user.getMeals()));
+            List<Meal> mealList = user.getMeals().stream()
+                    .distinct()
+                    .toList();
             user.setMeals(mealList);
             return user;
         }

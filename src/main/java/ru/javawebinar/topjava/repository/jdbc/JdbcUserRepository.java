@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.repository.jdbc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -14,19 +15,18 @@ import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 @Transactional(readOnly = true)
 public class JdbcUserRepository implements UserRepository {
+
+    private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -50,10 +50,7 @@ public class JdbcUserRepository implements UserRepository {
     @Transactional
     @Override
     public User save(@NotNull @Valid User user) {
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException("Invalid arguments to save User", violations);
-        }
+        JdbcUtil.validate(validator, user);
 
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
@@ -67,23 +64,23 @@ public class JdbcUserRepository implements UserRepository {
                 """, parameterSource) == 0) {
             return null;
         }
-        rolesUpdate(user.id(), user.getRoles(), isNew);
+        updateRoles(user.id(), user.getRoles(), isNew);
         return user;
     }
 
-    private void rolesUpdate(int id, Set<Role> roles, boolean isNew) {
+    private void updateRoles(int id, Set<Role> roles, boolean isNew) {
         if (!isNew) {
             jdbcTemplate.update("DELETE FROM user_role WHERE user_id=?", id);
         }
 
         if (!roles.isEmpty()) {
             String createSql = "INSERT INTO user_role ( role, user_id) VALUES (?,?)";
+            Role[] rolesArray = roles.toArray(new Role[0]);
             this.jdbcTemplate.batchUpdate(
                     createSql, new BatchPreparedStatementSetter() {
                         @Override
                         public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            Role[] rolesArray = roles.toArray(new Role[0]);
-                            ps.setString(1, rolesArray[i].toString());
+                            ps.setString(1, rolesArray[i].name());
                             ps.setLong(2, id);
                         }
 
@@ -110,7 +107,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User getByEmail(String email) {
-        String sql = "SELECT * FROM users INNER JOIN user_role ur ON users.id = ur.user_id WHERE email=?";
+        String sql = "SELECT * FROM users LEFT JOIN user_role ur ON users.id = ur.user_id WHERE email=?";
         List<User> users = jdbcTemplate.query(sql, getExtractor(), email);
         return DataAccessUtils.singleResult(users);
     }
@@ -124,42 +121,26 @@ public class JdbcUserRepository implements UserRepository {
     //    https://coderlessons.com/tutorials/java-tekhnologii/uznai-vesnu-jdbc/spring-jdbc-interfeis-resultsetextractor
     private ResultSetExtractor<List<User>> getExtractor() {
         return resultSet -> {
-            Map<Integer, List<User>> userMap = new LinkedHashMap<>();
-            User user;
+            Map<Integer, User> userMap = new LinkedHashMap<>();
             while (resultSet.next()) {
-                user = new User();
                 int id = resultSet.getInt("id");
-                user.setId(id);
-                user.setName(resultSet.getString("name"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPassword(resultSet.getString("password"));
-                user.setEnabled(resultSet.getBoolean("enabled"));
-                user.setRegistered(resultSet.getDate("registered"));
-                user.setCaloriesPerDay(resultSet.getInt("calories_per_day"));
-                user.setRoles(new HashSet<>());
+                User user = userMap.computeIfAbsent(id, k -> {
+                    try {
+                        return ROW_MAPPER.mapRow(resultSet, 0);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                if (user.getRoles() == null) {
+                    user.setRoles(new HashSet<>());
+                }
 
                 String role = resultSet.getString("role");
                 if (role != null) {
                     user.getRoles().add(Role.valueOf(role));
                 }
-                if (userMap.containsKey(id)) {
-                    userMap.get(id).add(user);
-                } else {
-                    List<User> list = new ArrayList<>();
-                    list.add(user);
-                    userMap.put(id, list);
-                }
             }
-            List<User> resultUsers = new ArrayList<>();
-            for (List<User> userList : userMap.values()) {
-                user = userList.get(0);
-                user.setRoles(userList
-                        .stream()
-                        .flatMap(user1 -> user1.getRoles().stream())
-                        .collect(Collectors.toSet()));
-                resultUsers.add(user);
-            }
-            return resultUsers;
+            return new ArrayList<>(userMap.values());
         };
     }
 }

@@ -72,7 +72,7 @@ public class JspMealController extends AbstractMealController {
         return "redirect:/meals";
     }
 
-    @PostMapping("/save")
+    @PostMapping
     public String save(HttpServletRequest request) throws UnsupportedEncodingException {
         request.setCharacterEncoding("UTF-8");
         Meal meal = new Meal(
