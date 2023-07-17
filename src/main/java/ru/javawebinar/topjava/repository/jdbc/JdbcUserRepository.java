@@ -123,10 +123,9 @@ public class JdbcUserRepository implements UserRepository {
     private ResultSetExtractor<List<User>> getExtractor() {
         return resultSet -> {
             Map<Integer, User> userMap = new LinkedHashMap<>();
-            User user;
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                user = userMap.computeIfAbsent(id, k -> {
+                User user = userMap.computeIfAbsent(id, k -> {
                     try {
                         User newUser = ROW_MAPPER.mapRow(resultSet, 0);
                         newUser.setRoles(EnumSet.noneOf(Role.class));

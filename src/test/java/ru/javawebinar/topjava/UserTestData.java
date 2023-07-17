@@ -36,7 +36,7 @@ public class UserTestData {
         updated.setCaloriesPerDay(330);
         updated.setPassword("newPass");
         updated.setEnabled(false);
-        updated.setRoles(Set.of(Role.ADMIN, Role.USER));
+        updated.setRoles(Set.of(Role.ADMIN));
         return updated;
     }
 }
