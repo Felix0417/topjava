@@ -63,7 +63,7 @@ public class JpaUserRepository implements UserRepository {
                 .setParameter(1, email)
                 .setMaxResults(1)
                 .getResultList();
-        return DataAccessUtils.singleResult(user);
+        return DataAccessUtils.uniqueResult(user);
     }
 
     @Override

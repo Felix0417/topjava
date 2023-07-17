@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.util.ValidationUtil;
 
 import javax.validation.Valid;
 import javax.validation.Validator;
@@ -50,7 +51,7 @@ public class JdbcUserRepository implements UserRepository {
     @Transactional
     @Override
     public User save(@NotNull @Valid User user) {
-        JdbcUtil.validate(validator, user);
+        ValidationUtil.validate(validator, user);
 
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
@@ -122,19 +123,18 @@ public class JdbcUserRepository implements UserRepository {
     private ResultSetExtractor<List<User>> getExtractor() {
         return resultSet -> {
             Map<Integer, User> userMap = new LinkedHashMap<>();
+            User user;
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                User user = userMap.computeIfAbsent(id, k -> {
+                user = userMap.computeIfAbsent(id, k -> {
                     try {
-                        return ROW_MAPPER.mapRow(resultSet, 0);
+                        User newUser = ROW_MAPPER.mapRow(resultSet, 0);
+                        newUser.setRoles(EnumSet.noneOf(Role.class));
+                        return newUser;
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
                 });
-                if (user.getRoles() == null) {
-                    user.setRoles(new HashSet<>());
-                }
-
                 String role = resultSet.getString("role");
                 if (role != null) {
                     user.getRoles().add(Role.valueOf(role));

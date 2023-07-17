@@ -2,9 +2,6 @@ package ru.javawebinar.topjava.service;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.support.NoOpCacheManager;
-import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import ru.javawebinar.topjava.model.Role;
@@ -19,17 +16,11 @@ import java.util.Set;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.UserTestData.*;
 
-@ContextConfiguration({"classpath:spring/override-spring-cache.xml"})
+@ContextConfiguration({"classpath:spring/override-cache.xml"})
 public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Autowired
     protected UserService service;
-
-    //    https://stackoverflow.com/questions/17814372/jpa-2-0-disable-session-cache-for-unit-tests/58963737#58963737
-    @Bean
-    public CacheManager cacheManager() {
-        return new NoOpCacheManager();
-    }
 
     @Test
     public void create() {
@@ -93,7 +84,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Test
     public void getByEmailHaveNoRoles() {
         User user = service.getByEmail("guest@gmail.com");
-        USER_MATCHER.assertMatch(guest, user);
+        USER_MATCHER.assertMatch(user, guest);
     }
 
     @Test

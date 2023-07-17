@@ -3,5 +3,10 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
-    <context:property-override location="classpath:db/db.properties"/>
+    <!--    https://stackoverflow.com/questions/17814372/jpa-2-0-disable-session-cache-for-unit-tests/58963737#58963737-->
+    <bean id="ehCacheManager" class="org.springframework.cache.support.NoOpCacheManager"/>
+
+    <beans profile="jpa, datajpa">
+        <context:property-override location="classpath:db/db.properties"/>
+    </beans>
 </beans>
