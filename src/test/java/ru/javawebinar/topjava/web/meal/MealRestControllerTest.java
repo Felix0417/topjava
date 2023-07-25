@@ -18,7 +18,6 @@ import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -85,13 +84,13 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetweenLocalDateTime() throws Exception {
-        LocalDateTime startDateTime = LocalDateTime.parse("2020-01-31T00:00:00");
-        LocalDateTime endDateTime = LocalDateTime.parse("2020-01-31T23:59:59");
-        String queryParams = String.format("filter?startDateTime=%s&endDateTime=%s", startDateTime, endDateTime);
-
         List<MealTo> mealToList = MealsUtil.getTos(filteredMeals, SecurityUtil.authUserCaloriesPerDay());
 
-        perform(MockMvcRequestBuilders.get(REST_URL + queryParams))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/filter?")
+                .param("startDate", "2020-01-31")
+                .param("startTime", "00:00")
+                .param("endDate", "2020-01-31")
+                .param("endTime", "23:59"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MEAL_TO_MATCHER.contentJson(mealToList));
