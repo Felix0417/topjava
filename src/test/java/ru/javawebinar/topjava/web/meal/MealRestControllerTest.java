@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.javawebinar.topjava.MealTestData;
+import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
@@ -32,7 +33,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getAll() throws Exception {
-        List<MealTo> mealToList = MealsUtil.getTos(meals, SecurityUtil.authUserCaloriesPerDay());
+        List<MealTo> mealToList = MealsUtil.getTos(meals, UserTestData.user.getCaloriesPerDay());
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -68,7 +69,7 @@ class MealRestControllerTest extends AbstractControllerTest {
         int newId = created.id();
         meal.setId(newId);
         MEAL_MATCHER.assertMatch(created, meal);
-        MEAL_MATCHER.assertMatch(mealService.get(newId, SecurityUtil.authUserId()), meal);
+        MEAL_MATCHER.assertMatch(mealService.get(newId, USER_ID), meal);
     }
 
     @Test
@@ -84,13 +85,23 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetweenLocalDateTime() throws Exception {
-        List<MealTo> mealToList = MealsUtil.getTos(filteredMeals, SecurityUtil.authUserCaloriesPerDay());
-
+        List<MealTo> mealToList = List.of(mealTo7, mealTo6, mealTo3, mealTo2);
         perform(MockMvcRequestBuilders.get(REST_URL + "/filter?")
-                .param("startDate", "2020-01-31")
-                .param("startTime", "00:00")
+                .param("startDate", "2020-01-30")
+                .param("startTime", "12:00")
                 .param("endDate", "2020-01-31")
                 .param("endTime", "23:59"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MEAL_TO_MATCHER.contentJson(mealToList));
+    }
+
+    @Test
+    void getBetweenNullDateTime() throws Exception {
+        List<MealTo> mealToList = List.of(mealTo7, mealTo6, mealTo5, mealTo4, mealTo3, mealTo2, mealTo1);
+        perform(MockMvcRequestBuilders.get(REST_URL + "/filter?")
+                .param("startDate", "")
+                .param("endTime", ""))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MEAL_TO_MATCHER.contentJson(mealToList));

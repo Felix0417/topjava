@@ -49,7 +49,7 @@ public abstract class AbstractUserController {
         return service.getByEmail(email);
     }
 
-    public User getWithMeals(int id){
+    public User getWithMeals(int id) {
         log.info("get with meals {}", id);
         return service.getWithMeals(id);
     }
