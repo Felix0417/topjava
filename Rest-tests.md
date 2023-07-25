@@ -1,6 +1,5 @@
 <h2>Get all meals</h2>
-curl --location --request GET 'http://localhost:8080/topjava/rest/meals' \
---data-raw ''
+curl --location --request GET 'http://localhost:8080/topjava/rest/meals' 
 
 <h2>Get meal by id</h2>
 curl --location --request GET 'http://localhost:8080/topjava/rest/meals/100004'
