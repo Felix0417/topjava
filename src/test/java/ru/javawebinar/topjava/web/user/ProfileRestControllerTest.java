@@ -1,20 +1,15 @@
 package ru.javawebinar.topjava.web.user;
 
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.javawebinar.topjava.MealTestData;
-import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
-
-import java.util.Arrays;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -23,9 +18,6 @@ import static ru.javawebinar.topjava.UserTestData.*;
 import static ru.javawebinar.topjava.web.user.ProfileRestController.REST_URL;
 
 class ProfileRestControllerTest extends AbstractControllerTest {
-
-    @Autowired
-    private Environment environment;
 
     @Autowired
     private UserService userService;
@@ -56,9 +48,9 @@ class ProfileRestControllerTest extends AbstractControllerTest {
         USER_MATCHER.assertMatch(userService.get(USER_ID), updated);
     }
 
+    @Override
     @Test
     public void getWithMeals() throws Exception {
-        Assumptions.assumeTrue(Arrays.stream(environment.getActiveProfiles()).anyMatch(env -> env.equalsIgnoreCase(Profiles.DATAJPA)));
         User userWithMeals = new User(user);
         userWithMeals.setMeals(MealTestData.meals);
         perform(MockMvcRequestBuilders.get(REST_URL + "/with-meals"))
