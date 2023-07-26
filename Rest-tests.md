@@ -5,8 +5,8 @@ curl --location --request GET 'http://localhost:8080/topjava/rest/meals'
 curl --location --request GET 'http://localhost:8080/topjava/rest/meals/100004'
 
 <h2>Create new meal</h2>
-curl --location --request POST 'http://localhost:8080/topjava/rest/meals' \
---header 'Content-Type: application/json' \
+curl --location --request POST 'http://localhost:8080/topjava/rest/meals' 
+--header 'Content-Type: application/json' 
 --data-raw '{
 "dateTime": "2023-07-23T00:51",
 "description": "Обед",
@@ -14,8 +14,8 @@ curl --location --request POST 'http://localhost:8080/topjava/rest/meals' \
 }'
 
 <h2>Update meal</h2>
-curl --location --request PUT 'http://localhost:8080/topjava/rest/meals/100004' \
---header 'Content-Type: application/json' \
+curl --location --request PUT 'http://localhost:8080/topjava/rest/meals/100004' 
+--header 'Content-Type: application/json' 
 --data-raw '{
 "dateTime": "2023-07-25T00:51",
 "description": "Обед",

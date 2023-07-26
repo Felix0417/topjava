@@ -69,7 +69,8 @@ public class MealTo {
         return calories == mealTo.calories
                 && excess == mealTo.excess
                 && Objects.equals(id, mealTo.id)
-                && Objects.equals(dateTime, mealTo.dateTime) && Objects.equals(description, mealTo.description);
+                && Objects.equals(dateTime, mealTo.dateTime)
+                && Objects.equals(description, mealTo.description);
     }
 
     @Override
