@@ -1,9 +1,6 @@
 package ru.javawebinar.topjava.web;
 
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,7 +14,6 @@ import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.Profiles;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
 
 @SpringJUnitWebConfig(locations = {
         "classpath:spring/spring-app.xml",
@@ -42,9 +38,6 @@ public abstract class AbstractControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Autowired
-    private Environment environment;
-
     @PostConstruct
     private void postConstruct() {
         mockMvc = MockMvcBuilders
@@ -55,10 +48,5 @@ public abstract class AbstractControllerTest {
 
     protected ResultActions perform(MockHttpServletRequestBuilder builder) throws Exception {
         return mockMvc.perform(builder);
-    }
-
-    @Test
-    public void getWithMeals() throws Exception {
-        Assumptions.assumeTrue(Arrays.stream(environment.getActiveProfiles()).anyMatch(env -> env.equalsIgnoreCase(Profiles.DATAJPA)));
     }
 }
