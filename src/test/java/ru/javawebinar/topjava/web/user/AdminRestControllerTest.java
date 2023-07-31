@@ -97,8 +97,8 @@ class AdminRestControllerTest extends AbstractControllerTest {
     @Test
     void enable() throws Exception {
         User changedEnableUser = getDisabled();
-        perform(MockMvcRequestBuilders.post("/admin/users/" + USER_ID)
-                .param("enabled", Boolean.toString(false)))
+        perform(MockMvcRequestBuilders.post(REST_URL + USER_ID)
+                .param("enabled", "false"))
                 .andExpect(status().isNoContent());
 
         USER_MATCHER.assertMatch(userService.get(USER_ID), changedEnableUser);

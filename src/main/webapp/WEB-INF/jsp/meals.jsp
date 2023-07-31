@@ -13,22 +13,22 @@
     <div class="container">
         <h3><spring:message code="meal.title"/></h3>
 
-        <form id="filter" method="post" action="meals/filter">
+        <form id="filter" method="get">
             <dl>
                 <dt><spring:message code="meal.startDate"/>:</dt>
-                <dd><input type="date" id="startDate" name="startDate" value="${param.startDate}"></dd>
+                <dd><input type="date" id="startDate" name="startDate"></dd>
             </dl>
             <dl>
                 <dt><spring:message code="meal.endDate"/>:</dt>
-                <dd><input type="date" id="endDate" name="endDate" value="${param.endDate}"></dd>
+                <dd><input type="date" id="endDate" name="endDate"></dd>
             </dl>
             <dl>
                 <dt><spring:message code="meal.startTime"/>:</dt>
-                <dd><input type="time" id="startTime" name="startTime" value="${param.startTime}"></dd>
+                <dd><input type="time" id="startTime" name="startTime"></dd>
             </dl>
             <dl>
                 <dt><spring:message code="meal.endTime"/>:</dt>
-                <dd><input type="time" id="endTime" name="endTime" value="${param.endTime}"></dd>
+                <dd><input type="time" id="endTime" name="endTime"></dd>
             </dl>
             <button type="button" class="btn btn-danger" onclick="clearFilter()">
                 <span class="fa fa-close"></span>
@@ -40,13 +40,11 @@
             </button>
         </form>
         <hr>
-        <%--        <a href="meals/create"><spring:message code="meal.add"/></a>--%>
         <button class="btn btn-primary" onclick="add()">
             <span class="fa fa-plus"></span>
             <spring:message code="meal.add"/>
         </button>
         <hr>
-        <%--        <table border="1" cellpadding="8" cellspacing="0" id="datatable">--%>
         <table class="table table-striped" id="datatable">
             <thead>
             <tr>
@@ -60,12 +58,7 @@
             <c:forEach items="${requestScope.meals}" var="meal">
                 <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
                 <tr id="${meal.id}" data-meal-excess="${meal.excess}">
-                    <td>
-                            <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
-                            <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
-                            <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
-                            ${fn:formatDateTime(meal.dateTime)}
-                    </td>
+                    <td>${fn:formatDateTime(meal.dateTime)}</td>
                     <td>${meal.description}</td>
                     <td>${meal.calories}</td>
                     <td><a class="update" onclick="update(${meal.id})"><span class="fa fa-pencil"></span></a></td>

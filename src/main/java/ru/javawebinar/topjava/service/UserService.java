@@ -5,7 +5,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
@@ -62,9 +61,7 @@ public class UserService {
     @CacheEvict(value = "users", allEntries = true)
     public void enable(int id, boolean enabled) {
         User user = get(id);
-        if (!user.getRoles().contains(Role.ADMIN)) {
-            user.setEnabled(enabled);
-            update(user);
-        }
+        user.setEnabled(enabled);
+        repository.save(user);
     }
 }
