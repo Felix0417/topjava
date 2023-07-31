@@ -39,6 +39,12 @@ public class UserTestData {
         return new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.USER));
     }
 
+    public static User getDisabled() {
+        User disabled = new User(user);
+        disabled.setEnabled(false);
+        return disabled;
+    }
+
     public static User getUpdated() {
         User updated = new User(user);
         updated.setEmail("update@gmail.com");

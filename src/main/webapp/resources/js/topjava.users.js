@@ -5,6 +5,19 @@ const ctx = {
     ajaxUrl: userAjaxUrl
 };
 
+function enable(chkbox, id) {
+    let enabled = $(chkbox).is(":checked");
+    $.ajax({
+        url: userAjaxUrl + id,
+        type: "POST",
+        data: "enabled=" + enabled
+    }).done(function () {
+        $(chkbox).closest("tr").attr("data-user-enabled", enabled);
+    }).fail(function () {
+        $(chkbox).prop("checked", !enabled);
+    });
+}
+
 // $(document).ready(function () {
 $(function () {
     makeEditable(
