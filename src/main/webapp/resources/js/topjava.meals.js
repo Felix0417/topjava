@@ -4,23 +4,6 @@ const ctx = {
     ajaxUrl: mealAjaxUrl
 };
 
-$.ajaxSetup({
-    converters: {
-        "text json": function (stringData) {
-            let json = JSON.parse(stringData);
-            if (typeof json === 'object') {
-                $(json).each(function () {
-                    if (this.hasOwnProperty('dateTime')) {
-                        this.dateTime = this.dateTime.slice(0, 16).replace('T', ' ');
-                    }
-                });
-            }
-            return json;
-        }
-    }
-});
-
-
 $(function () {
     makeEditable(
         $("#datatable").DataTable({
@@ -56,11 +39,10 @@ $(function () {
 });
 
 function filtering() {
-    form = $('#filter')
     $.ajax({
         url: ctx.ajaxUrl + 'filter',
         type: "GET",
-        data: form.serialize()
+        data: $('#filter').serialize()
     }).done(function (data) {
         updateTableWithData(data);
     })
