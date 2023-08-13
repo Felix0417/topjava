@@ -26,6 +26,9 @@ public class UserTestData {
     public static final int ADMIN_ID = START_SEQ + 1;
     public static final int GUEST_ID = START_SEQ + 2;
     public static final int NOT_FOUND = 10;
+    public static final String PROFILE_URL = "http://localhost/rest/profile";
+    public static final String ADMIN_URL = "http://localhost/rest/admin/users/";
+    public static final String PROFILE_EXISTS = "Пользователь с такой почтой уже существует";
 
     public static final User user = new User(USER_ID, "User", "user@yandex.ru", "password", 2005, Role.USER);
     public static final User admin = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", 1900, Role.ADMIN, Role.USER);
@@ -50,6 +53,15 @@ public class UserTestData {
         updated.setRoles(Collections.singletonList(Role.ADMIN));
         return updated;
     }
+
+    public static User getNewNotValid() {
+        return new User(null, null, "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.USER));
+    }
+
+    public static User getUpdatedNotValid() {
+        return new User(USER_ID, null, null, null, 0, false, null, null);
+    }
+
 
     public static String jsonWithPassword(User user, String passw) {
         return JsonUtil.writeAdditionProps(user, "password", passw);
