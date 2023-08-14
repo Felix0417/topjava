@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
@@ -44,7 +43,6 @@ public class MealUIController extends AbstractMealController {
         } else {
             super.update(meal, meal.getId());
         }
-        ResponseEntity.ok().build();
     }
 
     @Override

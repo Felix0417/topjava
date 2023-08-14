@@ -20,14 +20,13 @@ import ru.javawebinar.topjava.util.exception.ErrorInfo;
 import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.web.user.ProfileUIController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
-@RestControllerAdvice(annotations = RestController.class, basePackageClasses = {ProfileUIController.class})
+@RestControllerAdvice(annotations = RestController.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
     private static final Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
