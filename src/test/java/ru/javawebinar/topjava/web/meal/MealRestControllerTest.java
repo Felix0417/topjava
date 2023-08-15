@@ -16,6 +16,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -163,7 +164,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url", is(PROFILE_MEAL_URL)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.type", is(VALIDATION_ERROR.name())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.detail", is(PROFILE_MEAL_EXISTS)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details", contains(PROFILE_MEAL_EXISTS)));
     }
 
     @Test
@@ -179,6 +180,6 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url", is(PROFILE_MEAL_URL + MEAL1_ID)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.type", is(VALIDATION_ERROR.name())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.detail", is(PROFILE_MEAL_EXISTS)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details", contains(PROFILE_MEAL_EXISTS)));
     }
 }

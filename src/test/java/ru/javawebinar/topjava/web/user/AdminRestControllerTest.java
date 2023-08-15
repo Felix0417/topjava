@@ -13,6 +13,7 @@ import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -181,7 +182,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url", is(ADMIN_URL)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.type", is(VALIDATION_ERROR.name())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.detail", is(PROFILE_EXISTS)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details", contains(PROFILE_EXISTS)));
     }
 
     @Test
@@ -197,6 +198,6 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url", is(ADMIN_URL + USER_ID)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.type", is(VALIDATION_ERROR.name())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.detail", is(PROFILE_EXISTS)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details", contains(PROFILE_EXISTS)));
     }
 }

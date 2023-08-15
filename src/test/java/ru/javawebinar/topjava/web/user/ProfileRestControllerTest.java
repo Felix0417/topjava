@@ -15,6 +15,7 @@ import ru.javawebinar.topjava.util.UsersUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -124,7 +125,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url", is(PROFILE_URL)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.type", is(VALIDATION_ERROR.name())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.detail", is(PROFILE_EXISTS)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details", contains(PROFILE_EXISTS)));
     }
 
     @Test
@@ -141,6 +142,6 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url", is(PROFILE_URL)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.type", is(VALIDATION_ERROR.name())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.detail", is(PROFILE_EXISTS)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details", contains(PROFILE_EXISTS)));
     }
 }
